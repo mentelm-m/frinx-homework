@@ -24,4 +24,5 @@ You will be prompted to write:
 * user name - enter your username to access db 
 * database/master password - enter your password to access db
 
-This will create new database as well as a table in the database
+This will create new database and table as well as add data into the table
+as specified in the assignment documentation.

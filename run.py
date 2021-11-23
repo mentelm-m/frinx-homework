@@ -1,5 +1,6 @@
 import json
-from data import sort_and_send_data
+from data import sort_and_send_data, database, username, password
+
 
 with open('configClear_v2.json', 'r') as f:
   data = json.load(f)
@@ -8,12 +9,14 @@ interfaces = data['frinx-uniconfig-topology:configuration']['Cisco-IOS-XE-native
 
 for key, value in interfaces.items():
   if key == 'Port-channel':
-    sort_and_send_data(value, 'Port-channel', db='frinx', user='postgres', password='Michal31#!')
+    sort_and_send_data(value, 'Port-channel', db=database, user=username, password=password)
   if key == 'TenGigabitEthernet':
-    sort_and_send_data(value, 'TenGigabitEthernet', db='frinx', user='postgres', password='Michal31#!')
+    sort_and_send_data(value, 'TenGigabitEthernet', db=database, user=username, password=password)
   elif key == 'GigabitEthernet':
-    sort_and_send_data(value, 'GigabitEthernet', db='frinx', user='postgres', password='Michal31#!')
-  # elif key == 'BDI':
-  #   sort_and_send_data(value, 'BDI', db='frinx', user='postgres', password='Michal31#!')
-  # elif key == 'Loopback':
-  #   sort_and_send_data(value, 'Loopback', db='frinx', user='postgres', password='Michal31#!')
+    sort_and_send_data(value, 'GigabitEthernet', db=database, user=username, password=password)
+
+  # Functionality for for BDI and Loopback - uncomment below
+#   elif key == 'BDI':
+#     sort_and_send_data(value, 'BDI', db=database, user=username, password=password)
+#   elif key == 'Loopback':
+#     sort_and_send_data(value, 'Loopback', db=database, user=username, password=password)

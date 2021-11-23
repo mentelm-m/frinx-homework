@@ -3,9 +3,13 @@
 
 import json
 import psycopg2
+from getpass import getpass
 
+database = input("Choose a database: ")
+username = input("Choose a user: ")
+password = getpass("Enter valid password: ")
 
-def connect(db=None, user=None, password=None):
+def connect(db=None, user=username, password=password):
   # Initializing connection to db, which is None by default
 
   try:
@@ -17,9 +21,9 @@ def connect(db=None, user=None, password=None):
 
   return conn
 
-def sort_and_send_data(dataset, base_name, db=None, user=None, password=None):
+def sort_and_send_data(dataset, base_name, db=database, user=username, password=password):
   # Function to sort the data and send them into database according to the specification
-
+  max_list = []
   # Init connection and cursor
   conn = connect(db=db, user=user, password=password)
   cursor = conn.cursor()
@@ -38,7 +42,7 @@ def sort_and_send_data(dataset, base_name, db=None, user=None, password=None):
     # port_channel_id=config[Cisco-IOS-XE-ethernet:channel-group]['name']
     
     # Initialize a list to send to db
-    list_to_db = []
+    list_to_db = []    
 
     # Append items from config into list according to specification
     for pos in db_items:
@@ -66,19 +70,20 @@ def sort_and_send_data(dataset, base_name, db=None, user=None, password=None):
 
     # Append config into index 3 as a json format
     list_to_db.insert(3, json.dumps(config))
+    max_list.append(list_to_db)
 
     #Sending `list_to_db` to database
     sql = '''INSERT INTO homework  (connection, name, 
                                     description, config, type, 
                                     infra_type, port_channel_id, max_frame_size) 
                           VALUES (%s, %s, %s, %s, %s, %s, %s, %s);'''
-    try:
-      cursor.execute(sql, (*list_to_db,))
-      conn.commit()
-      count = cursor.rowcount
-      print(count, "Record inserted successfully into table")
-    except (Exception, psycopg2.Error) as error:
-      print("Failed to insert record into mobile table:", error)
+  try:
+    cursor.executemany(sql, (*max_list,))
+    conn.commit()
+    count = cursor.rowcount
+    print(count, "Record inserted successfully into table")
+  except (Exception, psycopg2.Error) as error:
+    print("Failed to insert record into mobile table:", error)
 
   # Close connection to db  
   if conn:

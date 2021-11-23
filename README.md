@@ -17,6 +17,7 @@ You will be prompted to write:
 
 #### If you'd like to create new database and table
 There are predefined database called `frinx` and table called `homework`
+
 Run `run.py`
 You will be prompted to write:
 * database name - please enter `frinx`

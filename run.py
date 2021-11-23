@@ -1,6 +1,12 @@
 import json
-from data import sort_and_send_data, database, username, password
+from data import sort_and_send_data, create_db, create_table, database, username, password
 
+
+if database == 'frinx':
+    create_db()
+    create_table()
+
+create_table()
 
 with open('configClear_v2.json', 'r') as f:
   data = json.load(f)

@@ -72,11 +72,13 @@ def sort_and_send_data(dataset, base_name, db=database, user=username, password=
     list_to_db.insert(3, json.dumps(config))
     max_list.append(list_to_db)
 
-    #Sending `list_to_db` to database
+    # Setup SQL command for execution
     sql = '''INSERT INTO homework  (connection, name, 
                                     description, config, type, 
                                     infra_type, port_channel_id, max_frame_size) 
                           VALUES (%s, %s, %s, %s, %s, %s, %s, %s);'''
+  
+  # Sending `max_list` to database
   try:
     cursor.executemany(sql, (*max_list,))
     conn.commit()
@@ -90,3 +92,50 @@ def sort_and_send_data(dataset, base_name, db=database, user=username, password=
     cursor.close()
     conn.close()
     print("PostgreSQL connection is closed")
+
+
+def create_db():
+  # Init connection to server, creating new database `frinx`
+  if database == 'frinx':
+    try:
+      conn = connect(user=username, password=password)
+      cursor = conn.cursor()
+      cursor.execute('CREATE DATABASE frinx;')
+      conn.commit()
+    except (Exception, psycopg2.Error) as error:
+      print("Error creating a database: ", error)
+
+    # Close the connection
+    if conn:
+        cursor.close()
+        conn.close()
+        print("PostgreSQL connection is closed")
+
+
+def create_table():
+  # Re-init connection to server and new database
+  try:
+    conn = connect(db=database, user=username, password=password)
+    cursor = conn.cursor()
+  except (Exception, psycopg2.Error) as error:
+    print("Error initializing connection: ", error)
+
+  # Defining table model according to specification
+  sql ='''CREATE TABLE IF NOT EXISTS homework (
+    id SERIAL PRIMARY KEY,
+    connection INTEGER,
+    name VARCHAR(255) NOT NULL,
+    description VARCHAR(255),
+    config json,
+    type VARCHAR(50),
+    infra_type VARCHAR(50),
+    port_channel_id INTEGER,
+    max_frame_size INTEGER
+  );'''
+  cursor.execute(sql)
+
+  # Close the connection
+  if conn:
+      cursor.close()
+      conn.close()
+      print("PostgreSQL connection is closed")
